@@ -111,7 +111,7 @@ def generate_sql(question):
             return f"SELECT {column} FROM STUDENTS WHERE marks > {num[0]};"
 
     elif "count" in q or "how many" in q:
-        return "SELECT COUNT(*) FROM STUDENTS;"
+        return "SELECT COUNT(*) AS total_students FROM STUDENTS;"
 
     elif "average" in q:
         return "SELECT AVG(marks) FROM STUDENTS;"
@@ -121,9 +121,20 @@ def generate_sql(question):
 
     elif "all students" in q:
         return "SELECT * FROM STUDENTS;"
+    
+    elif "average" in q:
+        return "SELECT AVG(marks) AS average_marks FROM STUDENTS;"
+
+    elif "highest" in q:
+        return "SELECT MAX(marks) AS highest_marks FROM STUDENTS;"
+
+    elif "lowest" in q:
+        return "SELECT MIN(marks) AS lowest_marks FROM STUDENTS;"
+
 
     else:
         return f"SELECT {column} FROM STUDENTS;"
+    
 
 
 # -------------------------------
