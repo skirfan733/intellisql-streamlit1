@@ -47,25 +47,40 @@ initialize_database()
 # Function: Convert NL → SQL
 # -------------------------------
 def generate_sql(question):
-    prompt = f"""
-    You are an expert in converting English questions into SQL queries.
-
-    Database: STUDENTS
-    Columns:
-    name, class, marks, company
-
-    Convert the question into ONLY SQL query.
-    Do not explain anything.
-
-    Question: {question}
+    """
+    Try Gemini first.
+    If API fails (cloud quota issue), use fallback logic.
     """
 
-    response = client.models.generate_content(
-        model="gemini-2.0-flash",
-        contents=prompt,
-    )
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=question,
+        )
+        return response.text.strip()
 
-    return response.text.strip()
+    except Exception:
+        # -------- FALLBACK (Runs on Streamlit Cloud) --------
+        q = question.lower()
+
+        if "all students" in q:
+            return "SELECT * FROM STUDENTS;"
+
+        elif "count" in q or "how many" in q:
+            return "SELECT COUNT(*) FROM STUDENTS;"
+
+        elif "above" in q or "greater" in q:
+            import re
+            num = re.findall(r'\d+', q)
+            if num:
+                return f"SELECT * FROM STUDENTS WHERE marks > {num[0]};"
+
+        elif "company" in q:
+            return "SELECT name, company FROM STUDENTS;"
+
+        else:
+            return "SELECT * FROM STUDENTS;"
+
 
 # -------------------------------
 # Execute SQL Query
