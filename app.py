@@ -8,7 +8,7 @@ from google import genai
 load_dotenv()
 
 # Create Gemini client
-client = genai.Client(api_key=os.getenv("AIzaSyBiBL-zIdbqmxy02AFeR7FN7me5c40poYU"))
+client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
 
 # -------------------------------
 # Function: Convert NL → SQL
