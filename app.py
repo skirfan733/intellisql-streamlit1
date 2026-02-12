@@ -10,6 +10,39 @@ load_dotenv()
 # Create Gemini client
 client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
 
+initialize_database()
+# -------------------------------
+# Create Database if Not Exists
+# -------------------------------
+def initialize_database():
+    conn = sqlite3.connect("data.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS STUDENTS(
+        name TEXT,
+        class TEXT,
+        marks INTEGER,
+        company TEXT
+    )
+    """)
+
+    # Insert sample data only if table is empty
+    cursor.execute("SELECT COUNT(*) FROM STUDENTS")
+    if cursor.fetchone()[0] == 0:
+        students_data = [
+            ("Sijo", "BTech", 75, "JSW"),
+            ("Lijo", "MTech", 69, "TCS"),
+            ("Rijo", "BSC", 79, "WIPRO"),
+            ("Sibi", "MSC", 89, "INFOSYS"),
+            ("Dilsha", "MCOM", 99, "CYIENT")
+        ]
+        cursor.executemany("INSERT INTO STUDENTS VALUES (?,?,?,?)", students_data)
+
+    conn.commit()
+    conn.close()
+
+
 # -------------------------------
 # Function: Convert NL → SQL
 # -------------------------------
