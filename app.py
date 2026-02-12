@@ -3,6 +3,7 @@ import sqlite3
 import os
 from dotenv import load_dotenv
 from google import genai
+import pandas as pd
 
 # Load API key
 load_dotenv()
@@ -87,11 +88,12 @@ def generate_sql(question):
 # -------------------------------
 def run_query(sql_query):
     conn = sqlite3.connect("data.db")
-    cursor = conn.cursor()
-    cursor.execute(sql_query)
-    rows = cursor.fetchall()
+
+    # Read query into dataframe
+    df = pd.read_sql_query(sql_query, conn)
+
     conn.close()
-    return rows
+    return df
 
 # -------------------------------
 # Streamlit UI
@@ -108,9 +110,17 @@ if st.button("Run Query"):
         st.code(sql_query, language="sql")
 
         try:
-            result = run_query(sql_query)
-            st.subheader("Result:")
-            for row in result:
-                st.write(row)
+            df = run_query(sql_query)
+
+            st.subheader("Query Result:")
+            st.dataframe(df, use_container_width=True)
+
         except Exception as e:
             st.error(f"SQL Error: {e}")
+csv = df.to_csv(index=False).encode('utf-8')
+st.download_button(
+    "Download as CSV",
+    csv,
+    "students_result.csv",
+    "text/csv"
+)
