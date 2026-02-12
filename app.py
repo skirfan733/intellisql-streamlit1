@@ -10,7 +10,7 @@ load_dotenv()
 # Create Gemini client
 client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
 
-initialize_database()
+
 # -------------------------------
 # Create Database if Not Exists
 # -------------------------------
@@ -42,7 +42,7 @@ def initialize_database():
     conn.commit()
     conn.close()
 
-
+initialize_database()
 # -------------------------------
 # Function: Convert NL → SQL
 # -------------------------------
